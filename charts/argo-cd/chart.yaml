@@ -1,7 +1,0 @@
-apiVersion: v2
-name: argo-cd
-version: 0.1.0
-dependencies:
-  - name: argo-cd
-    version: 5.53.7     # Argo CD Helm chart 버전
-    repository: https://argoproj.github.io/argo-helm
