@@ -1,3 +1,13 @@
-server:
-  service:
-    type: LoadBalancer
+# Argo CD 설정값 예시
+replicaCount: 1
+
+image:
+  repository: argoproj/argocd
+  tag: v2.7.2
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+# 추가 설정값들...
