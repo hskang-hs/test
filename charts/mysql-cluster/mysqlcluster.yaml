@@ -1,0 +1,15 @@
+apiVersion: mysql.presslabs.org/v1alpha1
+kind: MysqlCluster
+metadata:
+  name: my-cluster
+  namespace: default
+spec:
+  replicas: 2
+  secretName: my-cluster-secret
+  mysqlVersion: "8.0"
+  volumeSpec:
+    persistentVolumeClaim:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
