@@ -1,10 +1,57 @@
-# operator.yaml
+# Namespace
 apiVersion: v1
 kind: Namespace
 metadata:
   name: mysql-operator
 
 ---
+# ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mysql-operator
+  namespace: mysql-operator
+
+---
+# ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mysql-operator
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints", "persistentvolumeclaims", "events", "configmaps", "secrets"]
+  verbs: ["*"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
+  verbs: ["*"]
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["servicemonitors"]
+  verbs: ["get", "create"]
+- apiGroups: ["mysql.bitpoke.io"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["get", "list", "watch"]
+
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mysql-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: mysql-operator
+subjects:
+- kind: ServiceAccount
+  name: mysql-operator
+  namespace: mysql-operator
+
+---
+# Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,12 +69,196 @@ spec:
       labels:
         app: mysql-operator
     spec:
+      serviceAccountName: mysql-operator
       containers:
         - name: mysql-operator
-          image: ghcr.io/bitpoke/mysql-operator:0.4.0
+          image: bitpoke/mysql-operator:v0.6.3
           imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+            name: metrics
+          env:
+          - name: WATCH_NAMESPACE
+            value: ""  # 빈 값은 모든 네임스페이스 감시
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
 ---
-# CRDs 설치 (선택: 별도 yaml로 분리 가능)
+# Service for metrics
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-operator-metrics
+  namespace: mysql-operator
+  labels:
+    app: mysql-operator
+spec:
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: mysql-operator
+
+---
+# MySQLCluster CRD
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
-# ... MySQLCluster 등 필요한 CRD들
+metadata:
+  name: mysqlclusters.mysql.bitpoke.io
+spec:
+  group: mysql.bitpoke.io
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              replicas:
+                type: integer
+                minimum: 0
+              secretName:
+                type: string
+              image:
+                type: string
+              mysqlVersion:
+                type: string
+              storage:
+                type: object
+                properties:
+                  size:
+                    type: string
+                  storageClassName:
+                    type: string
+          status:
+            type: object
+            properties:
+              conditions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: string
+                    reason:
+                      type: string
+                    message:
+                      type: string
+  scope: Namespaced
+  names:
+    plural: mysqlclusters
+    singular: mysqlcluster
+    kind: MySQLCluster
+    shortNames:
+    - mysql
+
+---
+# MySQLUser CRD
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqlusers.mysql.bitpoke.io
+spec:
+  group: mysql.bitpoke.io
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              user:
+                type: string
+              host:
+                type: string
+              secretName:
+                type: string
+              clusterName:
+                type: string
+              permissions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    database:
+                      type: string
+                    table:
+                      type: string
+                    privileges:
+                      type: array
+                      items:
+                        type: string
+          status:
+            type: object
+  scope: Namespaced
+  names:
+    plural: mysqlusers
+    singular: mysqluser
+    kind: MySQLUser
+    shortNames:
+    - mysqluser
+
+---
+# MySQLDatabase CRD
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqldatabases.mysql.bitpoke.io
+spec:
+  group: mysql.bitpoke.io
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              database:
+                type: string
+              clusterName:
+                type: string
+              characterSet:
+                type: string
+              collation:
+                type: string
+          status:
+            type: object
+  scope: Namespaced
+  names:
+    plural: mysqldatabases
+    singular: mysqldatabase
+    kind: MySQLDatabase
+    shortNames:
+    - mysqldb
