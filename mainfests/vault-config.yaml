@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+  namespace: vault
+data:
+  vault.hcl: |
+    ui = true
+    log_level = "info"
+
+    storage "raft" {
+      path = "/vault/data"
+      node_id = ""
+
+      retry_join {
+        leader_api_addr = "https://mercury.neteer.co.kr:8200"
+      }
+
+      retry_join {
+        leader_api_addr = "https://venus.neteer.co.kr:8200"
+      }
+
+      retry_join {
+        leader_api_addr = "https://earth.neteer.co.kr:8200"
+      }
+
+      retry_join {
+        leader_api_addr = "https://mars.neteer.co.kr:8200"
+      }
+
+      retry_join {
+        leader_api_addr = "https://jupiter.neteer.co.kr:8200"
+      }
+    }
+
+    listener "tcp" {
+      address = "0.0.0.0:8200"
+      cluster_address = "0.0.0.0:8201"
+      tls_disable = false
+      tls_cert_file = "/vault/certs/solar/mercury-cert.pem"
+      tls_key_file = "/vault/certs/solar/mercury-key.pem"
+      tls_client_ca_file = "/vault/solar/certs/mercury-ca.pem"
+    }
+
+    api_addr = "https://mercury.neteer.co.kr:8200"
+    cluster_addr = "https://mercury.neteer.co.kr:8201"
+
+    cluster_name = "Neteer-Vault-Cluster"
+    disable_mlock = true
+    disable_cache = true
+
