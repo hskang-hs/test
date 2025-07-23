@@ -1,15 +1,27 @@
-apiVersion: mysql.bitpoke.io/v1alpha1
-kind: MysqlCluster
+apiVersion: pxc.percona.com/v1-9-0
+kind: PerconaXtraDBCluster
 metadata:
   name: my-cluster
   namespace: default
 spec:
-  replicas: 3
-  secretName: my-cluster-secret
-  mysqlVersion: "8.0"
-  volumeSpec:
-    persistentVolumeClaim:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 5Gi
+  crVersion: 1.9.0
+  secretsName: my-cluster-secret
+  sslSecretName: my-cluster-ssl
+  sslInternalSecretName: my-cluster-ssl-internal
+
+  mysqlVersion: 8.0.32-24.2
+
+  pxc:
+    size: 3
+    volumeSpec:
+      persistentVolumeClaim:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi
+
+  backup:
+    enabled: false
+
+  logCollector:
+    enabled: true
