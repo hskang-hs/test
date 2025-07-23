@@ -306,4 +306,4 @@ spec:
     singular: mysqlbackup
     kind: MysqlBackup
     shortNames:
-      - mysqlbkp
+      - mysqlbackup
