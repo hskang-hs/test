@@ -72,7 +72,7 @@ spec:
       serviceAccountName: mysql-operator
       containers:
         - name: mysql-operator
-          image: bitpoke/mysql-operator:latest
+          image: bitpoke/mysql-operator:v0.6.3
           imagePullPolicy: Always
           ports:
           - containerPort: 8080
