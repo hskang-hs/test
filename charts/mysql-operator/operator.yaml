@@ -262,3 +262,46 @@ spec:
     kind: MySQLDatabase
     shortNames:
     - mysqldb
+
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqlbackups.mysql.presslabs.org
+spec:
+  group: mysql.presslabs.org
+  names:
+    kind: MysqlBackup
+    listKind: MysqlBackupList
+    plural: mysqlbackups
+    singular: mysqlbackup
+    shortNames:
+      - mysqlbkp
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                backupURL:
+                  type: string
+                clusterName:
+                  type: string
+                storage:
+                  type: object
+                  properties:
+                    bucket:
+                      type: string
+                    endpoint:
+                      type: string
+                    credentialsSecret:
+                      type: string
+            status:
+              type: object
