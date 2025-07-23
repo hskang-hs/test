@@ -38,7 +38,7 @@ rules:
   verbs: ["*"]
 
 # MySQL Operator CRDs (presslabs.org domain)
-- apiGroups: ["mysql.presslabs.org"]
+- apiGroups: ["mysql.bitpoke.io"]
   resources: ["*"]
   verbs: ["*"]
 
