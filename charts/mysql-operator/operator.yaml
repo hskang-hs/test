@@ -28,16 +28,12 @@ rules:
 - apiGroups: ["monitoring.coreos.com"]
   resources: ["servicemonitors"]
   verbs: ["get", "create"]
-- apiGroups: ["mysql.bitpoke.io"]
-  resources: ["mysqlclusters", "mysqldatabases", "mysqlusers"]
+- apiGroups: ["mysql.presslabs.org"]
+  resources: ["mysqlclusters", "mysqldatabases", "mysqlusers", "mysqlbackups"]
   verbs: ["*"]
 - apiGroups: ["apiextensions.k8s.io"]
   resources: ["customresourcedefinitions"]
   verbs: ["get", "list", "watch"]
-- apiGroups: ["mysql.presslabs.org"]
-  resources: ["mysqlbackups"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-
 
 ---
 # ClusterRoleBinding
@@ -126,9 +122,9 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: mysqlclusters.mysql.bitpoke.io
+  name: mysqlclusters.mysql.presslabs.org
 spec:
-  group: mysql.bitpoke.io
+  group: mysql.presslabs.org
   versions:
   - name: v1alpha1
     served: true
@@ -185,9 +181,9 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: mysqlusers.mysql.bitpoke.io
+  name: mysqlusers.mysql.presslabs.org
 spec:
-  group: mysql.bitpoke.io
+  group: mysql.presslabs.org
   versions:
   - name: v1alpha1
     served: true
@@ -235,9 +231,9 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: mysqldatabases.mysql.bitpoke.io
+  name: mysqldatabases.mysql.presslabs.org
 spec:
-  group: mysql.bitpoke.io
+  group: mysql.presslabs.org
   versions:
   - name: v1alpha1
     served: true
@@ -267,8 +263,8 @@ spec:
     shortNames:
     - mysqldb
 
-
 ---
+# MySQLBackup CRD
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
