@@ -199,3 +199,9 @@ spec:
       secretAccessKeySecretRef:
         name: my-s3-secret
         key: secretAccessKey
+  readinessProbe:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
