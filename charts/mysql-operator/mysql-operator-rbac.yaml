@@ -1,3 +1,10 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mysql-operator
+
+---
 # ServiceAccount
 apiVersion: v1
 kind: ServiceAccount
@@ -6,71 +13,27 @@ metadata:
   namespace: mysql-operator
 
 ---
-# ClusterRole with all required permissions
+# ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: mysql-operator
 rules:
-# Core resources
 - apiGroups: [""]
-  resources: ["pods", "services", "endpoints", "persistentvolumeclaims", "events", "configmaps", "secrets", "serviceaccounts", "namespaces"]
+  resources: ["pods", "services", "endpoints", "persistentvolumeclaims", "events", "configmaps", "secrets"]
   verbs: ["*"]
-
-# Apps resources
 - apiGroups: ["apps"]
   resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
   verbs: ["*"]
-
-# RBAC resources
-- apiGroups: ["rbac.authorization.k8s.io"]
-  resources: ["roles", "rolebindings", "clusterroles", "clusterrolebindings"]
-  verbs: ["*"]
-
-# Policy resources
-- apiGroups: ["policy"]
-  resources: ["poddisruptionbudgets"]
-  verbs: ["*"]
-
-# Coordination resources (for leader election)
-- apiGroups: ["coordination.k8s.io"]
-  resources: ["leases"]
-  verbs: ["*"]
-
-# MySQL Operator CRDs (presslabs.org domain)
-- apiGroups: ["mysql.bitpoke.io"]
-  resources: ["*"]
-  verbs: ["*"]
-
-# Legacy CRDs (bitpoke.io domain) - for backward compatibility
-- apiGroups: ["mysql.bitpoke.io"]
-  resources: ["*"]
-  verbs: ["*"]
-
-# CRD management
-- apiGroups: ["apiextensions.k8s.io"]
-  resources: ["customresourcedefinitions"]
-  verbs: ["get", "list", "watch", "create", "update", "patch"]
-
-# Monitoring
 - apiGroups: ["monitoring.coreos.com"]
   resources: ["servicemonitors"]
-  verbs: ["get", "create", "update", "patch"]
-
-# Batch resources
-- apiGroups: ["batch"]
-  resources: ["jobs", "cronjobs"]
+  verbs: ["get", "create"]
+- apiGroups: ["mysql.presslabs.org"]
+  resources: ["mysqlclusters", "mysqldatabases", "mysqlusers", "mysqlbackups"]
   verbs: ["*"]
-
-# Storage resources
-- apiGroups: ["storage.k8s.io"]
-  resources: ["storageclasses"]
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
   verbs: ["get", "list", "watch"]
-
-# Networking
-- apiGroups: ["networking.k8s.io"]
-  resources: ["networkpolicies"]
-  verbs: ["*"]
 
 ---
 # ClusterRoleBinding
@@ -88,32 +51,255 @@ subjects:
   namespace: mysql-operator
 
 ---
-# Role for namespace-specific operations (leader election)
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  namespace: mysql-operator
-  name: mysql-operator-leader-election
-rules:
-- apiGroups: ["coordination.k8s.io"]
-  resources: ["leases"]
-  verbs: ["*"]
-- apiGroups: [""]
-  resources: ["events"]
-  verbs: ["create", "patch"]
-
----
-# RoleBinding for namespace-specific operations
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: mysql-operator-leader-election
-  namespace: mysql-operator
-subjects:
-- kind: ServiceAccount
   name: mysql-operator
   namespace: mysql-operator
-roleRef:
-  kind: Role
-  name: mysql-operator-leader-election
-  apiGroup: rbac.authorization.k8s.io
+  labels:
+    app: mysql-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-operator
+  template:
+    metadata:
+      labels:
+        app: mysql-operator
+    spec:
+      serviceAccountName: mysql-operator
+      containers:
+        - name: mysql-operator
+          image: bitpoke/mysql-operator:v0.6.3
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+            name: metrics
+          env:
+          - name: WATCH_NAMESPACE
+            value: ""  # 빈 값은 모든 네임스페이스 감시
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+---
+# Service for metrics
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-operator-metrics
+  namespace: mysql-operator
+  labels:
+    app: mysql-operator
+spec:
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: mysql-operator
+
+---
+# MySQLCluster CRD
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqlclusters.mysql.presslabs.org
+spec:
+  group: mysql.presslabs.org
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              replicas:
+                type: integer
+                minimum: 0
+              secretName:
+                type: string
+              image:
+                type: string
+              mysqlVersion:
+                type: string
+              storage:
+                type: object
+                properties:
+                  size:
+                    type: string
+                  storageClassName:
+                    type: string
+          status:
+            type: object
+            properties:
+              conditions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: string
+                    reason:
+                      type: string
+                    message:
+                      type: string
+  scope: Namespaced
+  names:
+    plural: mysqlclusters
+    singular: mysqlcluster
+    kind: MysqlCluster
+    shortNames:
+    - mysql
+
+---
+# MySQLUser CRD
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqlusers.mysql.presslabs.org
+spec:
+  group: mysql.presslabs.org
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              user:
+                type: string
+              host:
+                type: string
+              secretName:
+                type: string
+              clusterName:
+                type: string
+              permissions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    database:
+                      type: string
+                    table:
+                      type: string
+                    privileges:
+                      type: array
+                      items:
+                        type: string
+          status:
+            type: object
+  scope: Namespaced
+  names:
+    plural: mysqlusers
+    singular: mysqluser
+    kind: MysqlUser
+    shortNames:
+    - mysqluser
+
+---
+# MySQLDatabase CRD
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqldatabases.mysql.presslabs.org
+spec:
+  group: mysql.presslabs.org
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              database:
+                type: string
+              clusterName:
+                type: string
+              characterSet:
+                type: string
+              collation:
+                type: string
+          status:
+            type: object
+  scope: Namespaced
+  names:
+    plural: mysqldatabases
+    singular: mysqldatabase
+    kind: MysqlDatabase
+    shortNames:
+    - mysqldb
+
+---
+# MySQLBackup CRD
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqlbackups.mysql.presslabs.org
+spec:
+  group: mysql.presslabs.org
+  names:
+    kind: MysqlBackup
+    listKind: MysqlBackupList
+    plural: mysqlbackups
+    singular: mysqlbackup
+    shortNames:
+      - mysqlbkp
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                backupURL:
+                  type: string
+                clusterName:
+                  type: string
+                storage:
+                  type: object
+                  properties:
+                    bucket:
+                      type: string
+                    endpoint:
+                      type: string
+                    credentialsSecret:
+                      type: string
+            status:
+              type: object
