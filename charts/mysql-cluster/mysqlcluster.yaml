@@ -4,7 +4,7 @@ metadata:
   name: my-cluster
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   secretName: my-cluster-secret
   mysqlVersion: "8.0"
   volumeSpec:
