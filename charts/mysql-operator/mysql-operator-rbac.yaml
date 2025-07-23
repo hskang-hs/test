@@ -308,28 +308,3 @@ spec:
                       type: string
             status:
               type: object
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: mysql-operator-leader-election
-  namespace: mysql-operator
-rules:
-- apiGroups: ["coordination.k8s.io"]
-  resources: ["leases"]
-  verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: mysql-operator-leader-election
-  namespace: mysql-operator
-subjects:
-- kind: ServiceAccount
-  name: mysql-operator
-  namespace: mysql-operator
-roleRef:
-  kind: Role
-  name: mysql-operator-leader-election
-  apiGroup: rbac.authorization.k8s.io
