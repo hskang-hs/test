@@ -2,7 +2,7 @@ apiVersion: pxc.percona.com/v1
 kind: PerconaXtraDBCluster
 metadata:
   name: my-cluster
-  namespace: default
+  namespace: mysql-operator
 spec:
   crVersion: 1.9.0
   secretsName: my-cluster-secret
