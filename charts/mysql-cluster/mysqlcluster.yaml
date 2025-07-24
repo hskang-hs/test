@@ -27,7 +27,24 @@ spec:
   logCollector:
     enabled: true
 
-  expose:
+  # expose:
+  #   enabled: true
+  #   type: LoadBalancer
+  #   exposeType: direct
+
+  proxysql:
     enabled: true
-    type: LoadBalancer
-    exposeType: direct
+    size: 2
+    image: percona/percona-xtradb-cluster-operator:1.11.0-proxysql
+
+    expose:
+      enabled: true
+      type: LoadBalancer
+      exposeType: direct
+
+    backup:
+      enabled: false
+      image: percona/percona-xtradb-cluster-operator:1.11.0
+
+    logCollector:
+      enabled: true
