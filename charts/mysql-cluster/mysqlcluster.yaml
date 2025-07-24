@@ -23,7 +23,7 @@ spec:
 
   backup:
     enabled: false
-    image: percona/percona-xtradb-cluster-operator:1.9.0
+    image: percona/percona-xtradb-cluster-operator:1.11.0
 
   logCollector:
     enabled: true
