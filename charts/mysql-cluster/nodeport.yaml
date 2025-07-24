@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-cluster-proxysql-nodeport
+  namespace: mysql-operator
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+      targetPort: 3306
+      protocol: TCP
+      nodePort: 30306   # 원하는 포트(30000~32767)로 지정 가능
+    - port: 6032
+      targetPort: 6032
+      protocol: TCP
+      nodePort: 30332   # ProxySQL admin 포트
+  selector:
+    app.kubernetes.io/component: proxysql
+    app.kubernetes.io/instance: my-cluster
+    app.kubernetes.io/name: percona-xtradb-cluster

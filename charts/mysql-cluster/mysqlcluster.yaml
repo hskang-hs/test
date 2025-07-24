@@ -20,7 +20,7 @@ spec:
         resources:
           requests:
             storage: 5Gi
-
+            
   backup:
     enabled: false
     image: percona/percona-xtradb-cluster-operator:1.11.0
@@ -40,5 +40,5 @@ spec:
             storage: 1Gi
     expose:
       enabled: true
-      type: NodePort
+      type: LoadBalancer
       exposeType: direct
