@@ -20,6 +20,7 @@ spec:
         resources:
           requests:
             storage: 5Gi
+            
   backup:
     enabled: false
     image: percona/percona-xtradb-cluster-operator:1.11.0
@@ -27,31 +28,17 @@ spec:
   logCollector:
     enabled: true
 
-  # expose:
-  #   enabled: true
-  #   type: LoadBalancer
-  #   exposeType: direct
-
   proxysql:
     enabled: true
     size: 2
     image: percona/percona-xtradb-cluster-operator:1.11.0-proxysql
-
     volumeSpec:
       persistentVolumeClaim:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 1Gi  
-
+            storage: 1Gi
     expose:
       enabled: true
       type: LoadBalancer
       exposeType: direct
-
-    backup:
-      enabled: false
-      image: percona/percona-xtradb-cluster-operator:1.11.0
-
-    logCollector:
-      enabled: true
