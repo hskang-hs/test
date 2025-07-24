@@ -4,7 +4,7 @@ metadata:
   name: my-cluster
   namespace: mysql-operator
 spec:
-  crVersion: 1.9.0
+  crVersion: 1.11.0
   secretsName: my-cluster-secret
   sslSecretName: my-cluster-ssl
   sslInternalSecretName: my-cluster-ssl-internal
