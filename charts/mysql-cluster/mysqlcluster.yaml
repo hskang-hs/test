@@ -13,7 +13,7 @@ spec:
 
   pxc:
     size: 3
-    image: percona/percona-xtradb-cluster:8.0.32-24.2
+    image: percona/percona-xtradb-cluster:8.0.26-17.1
     volumeSpec:
       persistentVolumeClaim:
         accessModes: [ "ReadWriteOnce" ]
@@ -23,7 +23,13 @@ spec:
 
   backup:
     enabled: false
-    image: percona/percona-xtradb-cluster-operator:8.0.32-24.2
+    image: percona/percona-xtradb-cluster-operator:1.9.0
 
   logCollector:
     enabled: true
+
+
+  expose:
+    enabled: true
+    type: LoadBalancer
+    exposeType: direct
