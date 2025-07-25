@@ -12,7 +12,7 @@ spec:
   mysqlVersion: 8.0.35-27.1
 
   pxc:
-    size: 5
+    size: 3
     image: percona/percona-xtradb-cluster:8.0.35-27.1
     volumeSpec:
       persistentVolumeClaim:
