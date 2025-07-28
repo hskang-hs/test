@@ -1,34 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nkp-acme-ingress
+  name: example-ingress
   namespace: default
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-http
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    # cert-manager가 HTTP-01 챌린지를 처리할 수 있도록 설정
-    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0"
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
         - nkp.neteer.co.kr
-      secretName: nkp-neteer-tls
+      secretName: example-com-tls
   rules:
     - host: nkp.neteer.co.kr
       http:
         paths:
-          - path: /.well-known/acme-challenge/
-            pathType: Prefix
-            backend:
-              service:
-                name: cm-acme-http-solver
-                port:
-                  number: 8089
           - path: /
-            pathType: Prefix
+            pathType: Prefix  # 꼭 명시!
             backend:
               service:
-                name: your-application-service  # 실제 애플리케이션 서비스 이름으로 변경 필요
+                name: dummy-service
                 port:
                   number: 80
