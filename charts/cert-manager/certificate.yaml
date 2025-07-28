@@ -1,10 +1,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: example-com-cert
+  name: nkp-neteer-cert
   namespace: default
 spec:
-  secretName: example-com-tls
+  secretName: nkp-neteer-tls
   issuerRef:
     name: letsencrypt-http
     kind: ClusterIssuer
