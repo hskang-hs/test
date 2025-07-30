@@ -4,11 +4,7 @@ metadata:
   name: cafe-ingress-uri
   namespace: default
   annotations:
-
-    # 아까 생성한 Cluster-Issuer 이름을 넣어준다.
     cert-manager.io/cluster-issuer: "letsencrypt"
-
-    # http01 방식으로 도메인 소유 인증 진행
     cert-manager.io/acme-challenge-type: http01
 spec:
   ingressClassName: nginx
