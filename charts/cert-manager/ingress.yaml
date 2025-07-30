@@ -21,17 +21,17 @@ spec:
   - host: nkp.neteer.co.kr
     http:
       paths:
-      - path: /tea
+      # - path: /tea
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: tea-svc
+      #       port:
+      #         number: 80
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: tea-svc
-            port:
-              number: 80
-      - path: /coffee
-        pathType: Prefix
-        backend:
-          service:
-            name: coffee-svc
+            name: nginx-svc            
             port:
               number: 80
