@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: cafe-ingress-uri
+  namespace: default
   annotations:
 
     # 아까 생성한 Cluster-Issuer 이름을 넣어준다.
@@ -32,6 +33,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: nginx-svc            
+            name: nginx-svc
             port:
               number: 80
