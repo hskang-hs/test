@@ -15,4 +15,5 @@ spec:
     - http01:
         ingress:
           # Ingress Controller Class 지정
+          pathType: Prefix
           class: nginx
