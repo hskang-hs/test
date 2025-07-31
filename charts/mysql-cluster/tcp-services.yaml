@@ -5,4 +5,4 @@ metadata:
   namespace: ingress-nginx
 data:
   "3306": "mysql-operator/my-cluster-proxysql:3306"
-  "6032": "mysql-operator/my-cluster-proxysql:6032"
+  "6032": "mysql-operator/my-cluster-proxysql:33062"
