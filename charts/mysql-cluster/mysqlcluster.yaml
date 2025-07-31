@@ -39,6 +39,4 @@ spec:
           requests:
             storage: 1Gi
     expose:
-      enabled: true
-      type: LoadBalancer
-      exposeType: direct
+      enabled: false  # 외부 노출 비활성화 (NodePort로 대체)
