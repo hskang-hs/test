@@ -21,9 +21,4 @@ spec:
       port: 33062
       targetPort: 33062
       nodePort: 33062
-      protocol: TCP
-    - name: proxysql-management
-      port: 6032
-      targetPort: 6032
-      nodePort: 30632
-      protocol: TCP
+      protocol: TCP 
