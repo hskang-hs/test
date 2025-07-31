@@ -14,13 +14,6 @@ spec:
   pxc:
     size: 3
     image: percona/percona-xtradb-cluster:8.0.35-27.1
-    resources:
-      requests:
-        memory: "1Gi"
-        cpu: "500m"
-      limits:
-        memory: "2Gi"
-        cpu: "1000m"
     volumeSpec:
       persistentVolumeClaim:
         accessModes: [ "ReadWriteOnce" ]
@@ -39,13 +32,6 @@ spec:
     enabled: true
     size: 2
     image: percona/percona-xtradb-cluster-operator:1.11.0-proxysql
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
     volumeSpec:
       persistentVolumeClaim:
         accessModes: [ "ReadWriteOnce" ]
