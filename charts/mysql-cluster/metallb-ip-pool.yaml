@@ -8,6 +8,8 @@ spec:
   addresses:
     - 119.42.188.175/32  # ingress-nginx용
     - 119.42.188.176/32  # ProxySQL용
+    - 119.42.188.177/32  # 추가 IP
+    - 119.42.188.178/32  # 추가 IP
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
@@ -26,7 +28,7 @@ spec:
   selector:
     app.kubernetes.io/component: proxysql
   type: LoadBalancer
-  loadBalancerIP: 119.42.188.176  # ProxySQL 전용 IP
+  loadBalancerIP: 119.42.188.177  # 사용하지 않는 IP
   ports:
     - name: mysql
       port: 3306
