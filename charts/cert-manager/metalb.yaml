@@ -12,4 +12,6 @@ kind: L2Advertisement
 metadata:
   namespace: metallb-system
   name: default-advertisement
-spec: {}
+spec:
+  ipAddressPools:
+    - nginx-ip-pool
