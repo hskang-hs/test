@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-service-nkp
+  labels:
+    app: web-service-nkp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-service-nkp
+  template:
+    metadata:
+      labels:
+        app: web-service-nkp
+    spec:
+      containers:
+        - name: web-service-nkp
+          image: ghcr.io/neteer-cs-biz/web-service-nkp:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          env:
+            - name: REAL_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: web-service-config
+                  key: REAL_HOSTNAME
+          volumeMounts:
+            - name: files-volume
+              mountPath: /app/html/files
+            - name: certs-volume
+              mountPath: /app/html/certs
+              readOnly: true
+            - name: logs-volume
+              mountPath: /app/logs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service-nkp
+spec:
+  selector:
+    app: web-service-nkp
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: https
+      port: 443
+      targetPort: 443
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-service-config
+data:
+  REAL_HOSTNAME: "nkp.neteer.co.kr"  # 실제 호스트명으로 변경
