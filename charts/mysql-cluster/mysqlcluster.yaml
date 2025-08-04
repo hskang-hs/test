@@ -19,7 +19,7 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 5Gi
+            storage: 10Gi
             
   backup:
     enabled: false
@@ -37,6 +37,6 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 1Gi
+            storage: 2Gi
     expose:
       enabled: false
