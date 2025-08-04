@@ -39,14 +39,7 @@ spec:
                 configMapKeyRef:
                   name: web-service-config
                   key: REAL_HOSTNAME
-          volumeMounts:
-            - name: files-volume
-              mountPath: /app/html/files
-            - name: certs-volume
-              mountPath: /app/html/certs
-              readOnly: true
-            - name: logs-volume
-              mountPath: /app/logs
+          
 ---
 apiVersion: v1
 kind: Service
@@ -63,7 +56,7 @@ spec:
     - name: https
       port: 443
       targetPort: 443
-  type: LoadBalancer
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: ConfigMap
