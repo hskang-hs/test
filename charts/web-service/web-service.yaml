@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: web-service
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -67,8 +72,3 @@ metadata:
   namespace: web-service
 data:
   REAL_HOSTNAME: "nkp.neteer.co.kr"  # 실제 호스트명으로 변경
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: web-service
