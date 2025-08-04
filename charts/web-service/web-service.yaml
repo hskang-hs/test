@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-service-nkp
+  namespace: web-service
   labels:
     app: web-service-nkp
 spec:
@@ -46,6 +47,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: web-service-nkp
+  namespace: web-service
 spec:
   selector:
     app: web-service-nkp
@@ -65,3 +67,8 @@ metadata:
   namespace: web-service
 data:
   REAL_HOSTNAME: "nkp.neteer.co.kr"  # 실제 호스트명으로 변경
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: web-service
