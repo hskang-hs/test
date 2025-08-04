@@ -20,15 +20,6 @@ spec:
         resources:
           requests:
             storage: 5Gi
-    configuration: |
-      [mysqld]
-        wait_timeout = 28800
-        interactive_timeout = 28800
-        max_connections = 200
-        max_connect_errors = 1000000
-        connect_timeout = 10
-        net_read_timeout = 30
-        net_write_timeout = 60
             
   backup:
     enabled: false
@@ -49,10 +40,3 @@ spec:
             storage: 1Gi
     expose:
       enabled: false
-    configuration: |
-      mysql-connection_max_allowed_packet=67108864
-      mysql-max_connections=2000
-      mysql-default_max_connections_per_user=100
-      mysql-connection_timeout_server=0
-      mysql-connection_timeout_client=0
-      mysql-connection_timeout_server_max=0
