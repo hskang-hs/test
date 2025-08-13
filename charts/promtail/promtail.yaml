@@ -66,5 +66,5 @@ spec:
     - ReadWriteMany   # 여러 Pod가 읽고 쓸 수 있게
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: ""
+      storage: 500Mi
+  storageClassName: standard
