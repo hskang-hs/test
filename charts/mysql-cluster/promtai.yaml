@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: promtail-config
+  namespace: mysql-operator
+data:
+  config.yaml: |
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 0
+    
+    positions:
+      filename: /tmp/positions.yaml
+    
+    clients:
+      - url: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
+    scrape_configs:
+    - job_name: mysql-general
+      static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: mysql-general
+          cluster: my-cluster
+          namespace: mysql-operator
+          pod: ${HOSTNAME}
+          __path__: /var/log/mysql/mysqld-general.log
+      pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s+(?P<thread_id>\d+)\s+(?P<command>\w+)\s+(?P<message>.*)$'
+      - labels:
+          thread_id:
+          command:
+    
+    - job_name: mysql-slow
+      static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: mysql-slow
+          cluster: my-cluster
+          namespace: mysql-operator
+          pod: ${HOSTNAME}
+          __path__: /var/log/mysql/mysqld-slow.log
+      pipeline_stages:
+      - multiline:
+          firstline: '^# Time:'
+          max_wait_time: 3s
+    
+    - job_name: mysql-error
+      static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: mysql-error
+          cluster: my-cluster
+          namespace: mysql-operator
+          pod: ${HOSTNAME}
+          __path__: /var/log/mysql/mysqld.log
+    
+    - job_name: mysql-audit
+      static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: mysql-audit
+          cluster: my-cluster
+          namespace: mysql-operator
+          pod: ${HOSTNAME}
+          __path__: /var/log/mysql/audit.log

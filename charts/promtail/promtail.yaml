@@ -25,8 +25,7 @@ spec:
         mountPath: /etc/promtail
   volumes:
   - name: mysql-logs
-    persistentVolumeClaim:
-      claimName: mysql-logs-pvc
+    emptyDir: {}
   - name: promtail-config
     configMap:
       name: promtail-config
@@ -55,16 +54,3 @@ data:
             labels:
               job: mysql
               __path__: /var/log/mysql/mysql-general.log
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mysql-logs-pvc
-  namespace: mysql-operator
-spec:
-  accessModes:
-    - ReadWriteMany   # 여러 Pod가 읽고 쓸 수 있게
-  resources:
-    requests:
-      storage: 500Mi
-  storageClassName: nutanix-volume

@@ -20,7 +20,55 @@ spec:
         resources:
           requests:
             storage: 10Gi
-            
+    volumes:
+    - name: mysql-logs
+      emptyDir: {}
+    volumeMounts:
+      - name: mysql-logs
+        mountPath: /var/log/mysql
+
+    sidecars:
+    - image: grafana/promtail:2.8.2
+      name: promtail
+      args:
+        - -config.file=/etc/promtail/config.yaml
+        - -log.level=info
+      env:
+      - name: HOSTNAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "50m"
+        limits:
+          memory: "128Mi"
+          cpu: "100m"
+      ports:
+      - containerPort: 9080
+        name: http-metrics
+        protocol: TCP
+      volumeMounts:
+      - name: mysql-logs
+        mountPath: /var/log/mysql
+        readOnly: true
+      - name: promtail-config
+        mountPath: /etc/promtail
+        readOnly: true
+      livenessProbe:
+        httpGet:
+          path: /ready
+          port: http-metrics
+        initialDelaySeconds: 10
+        periodSeconds: 10
+      readinessProbe:
+        httpGet:
+          path: /ready
+          port: http-metrics
+        initialDelaySeconds: 10
+        periodSeconds: 10
+
   backup:
     enabled: false
     image: percona/percona-xtradb-cluster-operator:1.11.0
