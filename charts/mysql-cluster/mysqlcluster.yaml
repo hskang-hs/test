@@ -21,12 +21,12 @@ spec:
           requests:
             storage: 10Gi
   
-  podSpec:
-    volumes:
-      - name: promtail-config
-        configMap:
-          name: promtail-config
-          
+    podSpec:
+      volumes:
+        - name: promtail-config
+          configMap:
+            name: promtail-config
+
     sidecars:
     - name: promtail
       image: grafana/promtail:2.8.2
