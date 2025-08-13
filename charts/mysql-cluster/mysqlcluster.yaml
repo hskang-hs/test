@@ -21,11 +21,12 @@ spec:
           requests:
             storage: 10Gi
   
-    podSpec:
-      volumes:
-        - name: promtail-config
-          configMap:
-            name: promtail-config
+    volumes:
+    - name: mysql-logs
+      emptyDir: {}
+    - name: promtail-config
+      configMap:
+        name: promtail-config
 
     sidecars:
     - name: promtail
