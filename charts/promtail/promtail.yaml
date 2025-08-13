@@ -67,4 +67,4 @@ spec:
   resources:
     requests:
       storage: 500Mi
-  storageClassName: standard
+  storageClassName: nutanix-volume
