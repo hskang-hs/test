@@ -23,6 +23,9 @@ spec:
     volumes:
     - name: mysql-logs
       emptyDir: {}
+    - name: promtail-config
+    configMap:
+      name: promtail-config
     volumeMounts:
       - name: mysql-logs
         mountPath: /var/log/mysql
