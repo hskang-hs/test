@@ -21,6 +21,27 @@ spec:
           requests:
             storage: 10Gi
 
+    sidecars:
+    - image: busybox
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo echo $(date -u) 'test' >> /dev/null; sleep 5; done"]
+      name: my-sidecar-1
+      volumeMounts:
+      - mountPath: /volume1
+        name: sidecar-volume-claim
+    sidecarPVCs:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: sidecar-volume-claim
+      spec:
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+
   backup:
     enabled: false
     image: percona/percona-xtradb-cluster-operator:1.11.0
