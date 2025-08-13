@@ -20,26 +20,26 @@ spec:
         resources:
           requests:
             storage: 10Gi
-  
-    volumes:
-    - name: mysql-logs
-      emptyDir: {}
-    - name: promtail-config
-      configMap:
-        name: promtail-config
 
-    sidecars:
-    - name: promtail
-      image: grafana/promtail:2.8.2
-      args:
-        - -config.file=/etc/promtail/config.yaml
-      volumeMounts:
+    podSpec:
+      volumes:
         - name: mysql-logs
-          mountPath: /var/log/mysql
-          readOnly: true
+          emptyDir: {}
         - name: promtail-config
-          mountPath: /etc/promtail
-          readOnly: true
+          configMap:
+            name: promtail-config
+      sidecars:
+        - name: promtail
+          image: grafana/promtail:2.8.2
+          args:
+            - -config.file=/etc/promtail/config.yaml
+          volumeMounts:
+            - name: mysql-logs
+              mountPath: /var/log/mysql
+              readOnly: true
+            - name: promtail-config
+              mountPath: /etc/promtail
+              readOnly: true
 
   backup:
     enabled: false
