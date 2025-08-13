@@ -22,25 +22,17 @@ spec:
             storage: 10Gi
 
     sidecars:
-    - image: busybox
-      command: ["/bin/sh"]
-      args: ["-c", "while true; do echo echo $(date -u) 'test' >> /dev/null; sleep 5; done"]
-      name: my-sidecar-1
+    - name: promtail
+      image: grafana/promtail:2.8.2
+      args:
+        - -config.file=/etc/promtail/config.yaml
       volumeMounts:
-      - mountPath: /volume1
-        name: sidecar-volume-claim
-    sidecarPVCs:
-    - apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        name: sidecar-volume-claim
-      spec:
-        resources:
-          requests:
-            storage: 1Gi
-        volumeMode: Filesystem
-        accessModes:
-          - ReadWriteOnce
+        - name: datadir
+          mountPath: /var/log/mysql
+          readOnly: true
+        - name: promtail-config
+          mountPath: /etc/promtail
+          readOnly: true
 
   backup:
     enabled: false
