@@ -34,7 +34,7 @@ spec:
       args:
         - -config.file=/etc/promtail/config.yaml
       volumeMounts:
-        - name: datadir
+        - name: mysql-logs
           mountPath: /var/log/mysql
           readOnly: true
         - name: promtail-config
