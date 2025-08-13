@@ -21,26 +21,6 @@ spec:
           requests:
             storage: 10Gi
 
-    podSpec:
-      volumes:
-        - name: mysql-logs
-          emptyDir: {}
-        - name: promtail-config
-          configMap:
-            name: promtail-config
-      sidecars:
-        - name: promtail
-          image: grafana/promtail:2.8.2
-          args:
-            - -config.file=/etc/promtail/config.yaml
-          volumeMounts:
-            - name: mysql-logs
-              mountPath: /var/log/mysql
-              readOnly: true
-            - name: promtail-config
-              mountPath: /etc/promtail
-              readOnly: true
-
   backup:
     enabled: false
     image: percona/percona-xtradb-cluster-operator:1.11.0
