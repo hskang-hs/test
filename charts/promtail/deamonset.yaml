@@ -46,7 +46,7 @@ data:
       filename: /tmp/positions.yaml
 
     clients:
-      - url: http://loki:3100/loki/api/v1/push
+      - url: http://loki-service.monitoring.svc.cluster.local:3100/loki/api/v1/push
 
     scrape_configs:
       - job_name: kubernetes-pxc
@@ -100,7 +100,7 @@ spec:
             - name: config
               mountPath: /etc/promtail
             - name: varlib
-              mountPath: /var/lib
+              mountPath: /var/lib/mysql
               readOnly: true
       volumes:
         - name: config
@@ -108,4 +108,4 @@ spec:
             name: promtail-config
         - name: varlib
           hostPath:
-            path: /var/lib
+            path: /var/lib/mysql
