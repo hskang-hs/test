@@ -56,9 +56,6 @@ data:
           - source_labels: [__meta_kubernetes_pod_label_app]
             regex: pxc|proxysql
             action: keep
-          - source_labels: [__meta_kubernetes_pod_container_name]
-            regex: pxc|proxysql
-            action: keep
           - source_labels: [__meta_kubernetes_pod_name]
             target_label: pod
           - source_labels: [__meta_kubernetes_namespace]
@@ -67,13 +64,12 @@ data:
             regex: __meta_kubernetes_pod_label_(.+)
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
-          - source_labels: [__meta_kubernetes_pod_container_name]
-            regex: pxc
-            replacement: /var/lib/mysql/*.log
-            target_label: __path__
-          - source_labels: [__meta_kubernetes_pod_container_name]
-            regex: proxysql
-            replacement: /var/lib/proxysql/*.log
+          - source_labels:
+              - __meta_kubernetes_pod_container_name
+              - __meta_kubernetes_pod_uid
+            separator: ;
+            regex: (.+);(.+)
+            replacement: /var/log/pods/*$2/*.log
             target_label: __path__
 ---
 apiVersion: apps/v1
@@ -99,13 +95,19 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/promtail
-            - name: varlib
-              mountPath: /var/lib/mysql
+            - name: pods
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: containers
+              mountPath: /var/log/containers
               readOnly: true
       volumes:
         - name: config
           configMap:
             name: promtail-config
-        - name: varlib
+        - name: pods
           hostPath:
-            path: /var/lib/mysql
+            path: /var/log/pods
+        - name: containers
+          hostPath:
+            path: /var/log/containers
