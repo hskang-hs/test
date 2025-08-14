@@ -14,6 +14,12 @@ spec:
   pxc:
     size: 3
     image: percona/percona-xtradb-cluster:8.0.35-27.1
+    configuration: |
+      [mysqld]
+      log_error=/dev/stderr
+      general_log=1
+      general_log_file=/dev/stdout
+      log_bin_trust_function_creators=1
     volumeSpec:
       persistentVolumeClaim:
         accessModes: [ "ReadWriteOnce" ]
