@@ -8,9 +8,16 @@ kind: Secret
 metadata:
   name: ghcr-secret
   namespace: web-service
-type: kubernetes.io/dockerconfigjson
+  type: kubernetes.io/dockerconfigjson
 data:
-  .dockerconfigjson: ewogICJhdXRocyI6IHsKICAgICJnaGNyLmlvIjogewogICAgICAidXNlcm5hbWUiOiAiaHNrYW5nIiwKICAgICAgInBhc3N3b3JkIjogInJvb2thcmllM0AiLAogICAgICAiYXV0aCI6ICJhSE5yWVc1bk9uSnZiMnRoY21sbE0wQT0iCiAgICB9CiAgfQp9
+  .dockerconfigjson: |
+    {
+      "auths": {
+        "ghcr.io": {
+          "auth": "{{ .Values.imagePullSecrets.ghcr.auth }}"
+        }
+      }
+    }
 ---
 apiVersion: apps/v1
 kind: Deployment
