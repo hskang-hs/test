@@ -36,7 +36,7 @@ metadata:
   namespace: default
 spec:
   type: ExternalName
-  externalName: web-service.web-service-nkp.svc.cluster.local
+  externalName: web-service-nkp.web-service.svc.cluster.local
   ports:
     - port: 80
       targetPort: 80
