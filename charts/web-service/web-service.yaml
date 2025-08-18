@@ -3,22 +3,6 @@ kind: Namespace
 metadata:
   name: web-service
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ghcr-secret
-  namespace: web-service
-  type: kubernetes.io/dockerconfigjson
-data:
-  .dockerconfigjson: |
-    {
-      "auths": {
-        "ghcr.io": {
-          "auth": "{{ .Values.imagePullSecrets.ghcr.auth }}"
-        }
-      }
-    }
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
