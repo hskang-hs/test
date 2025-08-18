@@ -51,10 +51,7 @@ spec:
               memory: 256Mi
           env:
             - name: REAL_HOSTNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: web-service-config
-                  key: REAL_HOSTNAME
+              value: "nkp.neteer.co.kr"
       imagePullSecrets:
         - name: ghcr-secret
           
