@@ -20,9 +20,16 @@ spec:
         resources:
           requests:
             storage: 10Gi
-    # ★ 여기 추가
     extraFlags:
       - "--default-authentication-plugin=caching_sha2_password"
+      - "--log_error_services=log_sink_json"
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1G
+      requests:
+        cpu: 600m
+        memory: 1G
 
   backup:
     enabled: false
@@ -30,6 +37,8 @@ spec:
 
   logCollector:
     enabled: true
+    # ✨ 이 라인을 추가하여 logCollector 이미지를 명시적으로 설정하세요.
+    image: percona/percona-xtradb-cluster-operator:1.11.0-logcollector
 
   proxysql:
     enabled: true
