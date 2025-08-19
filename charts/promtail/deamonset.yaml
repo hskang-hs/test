@@ -109,6 +109,8 @@ spec:
         - name: pods
           hostPath:
             path: /var/log/pods
+            type: Directory
         - name: containers
           hostPath:
             path: /var/log/containers
+            type: Directory
