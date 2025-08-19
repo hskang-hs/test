@@ -20,6 +20,17 @@ spec:
       general_log=1
       general_log_file=/proc/self/fd/1
       log_bin_trust_function_creators=1
+    podSpec:
+      securityContext:
+        runAsUser: 1001   # MySQL 컨테이너가 쓰기 가능한 사용자로 설정
+        fsGroup: 1001     # /var/lib/mysql 등 볼륨에 대한 그룹 권한
+      containers:
+        - name: pxc
+          env:
+            - name: MYSQL_GENERAL_LOG
+              value: "1"
+            - name: MYSQL_SLOW_LOG
+              value: "1"
     volumeSpec:
       persistentVolumeClaim:
         accessModes: [ "ReadWriteOnce" ]
