@@ -23,6 +23,8 @@ spec:
     extraFlags:
       - "--default-authentication-plugin=caching_sha2_password"
       - "--log_error_services=log_sink_json"
+      - "--general-log=1"
+      - "--general-log-file=/var/log/mysql/general.log"
     resources:
       limits:
         cpu: 1000m
