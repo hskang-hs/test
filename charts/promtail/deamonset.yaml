@@ -60,6 +60,11 @@ data:
               __path__: /var/log/pods/mysql-operator_*/*/*.log
         pipeline_stages:
           - cri: {}
+          # MySQL native_password 경고 로그 제외
+          - match:
+              selector: '{job="mysql-operator"}'
+              action: drop
+              expression: '.*mysql_native_password.*is deprecated.*'
           - regex:
               expression: '^/var/log/pods/mysql-operator_(?P<pod_name>[^_]+).*?/(?P<container_name>[^/]+)/.*$'
           - labels:
