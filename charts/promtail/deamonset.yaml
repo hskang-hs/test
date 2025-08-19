@@ -49,37 +49,39 @@ data:
       - url: http://loki-service.monitoring.svc.cluster.local:3100/loki/api/v1/push
 
     scrape_configs:
-      - job_name: kubernetes-pxc
-        kubernetes_sd_configs:
-          - role: pod
+      # mysql-operator 네임스페이스 로그 - 실제 파일 구조 반영
+      - job_name: mysql-operator-logs
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: mysql-operator
+              namespace: mysql-operator
+              __path__: /var/log/pods/mysql-operator_*/*/*.log
         pipeline_stages:
           - cri: {}
-        relabel_configs:
-          # 네임스페이스 필터링
-          - source_labels: [__meta_kubernetes_namespace]
-            action: keep
-            regex: (mysql-operator|web-service)
-          
-          # 올바른 로그 파일 경로 - 실제 디렉토리 구조에 맞춤
-          # 패턴: namespace_podname_poduid 형태
-          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
-            separator: "_"
-            target_label: __tmp_full_path
-            replacement: ${1}_${2}_${3}
-          - source_labels: [__tmp_full_path, __meta_kubernetes_pod_container_name]
-            separator: "/"
-            target_label: __path__
-            replacement: /var/log/pods/${1}/${2}/*.log
-          
-          # 메타데이터 라벨 추가
-          - source_labels: [__meta_kubernetes_namespace]
-            target_label: namespace
-          - source_labels: [__meta_kubernetes_pod_name]
-            target_label: pod_name
-          - source_labels: [__meta_kubernetes_pod_container_name]
-            target_label: container_name
-          - source_labels: [__meta_kubernetes_pod_node_name]
-            target_label: node_name
+          - regex:
+              expression: '^/var/log/pods/mysql-operator_(?P<pod_name>[^_]+).*?/(?P<container_name>[^/]+)/.*$'
+          - labels:
+              pod_name:
+              container_name:
+
+      # web-service 네임스페이스 로그
+      - job_name: web-service-logs
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: web-service
+              namespace: web-service
+              __path__: /var/log/pods/web-service_*/*/*.log
+        pipeline_stages:
+          - cri: {}
+          - regex:
+              expression: '^/var/log/pods/web-service_(?P<pod_name>[^_]+).*?/(?P<container_name>[^/]+)/.*$'
+          - labels:
+              pod_name:
+              container_name:
 ---
 apiVersion: apps/v1
 kind: DaemonSet
