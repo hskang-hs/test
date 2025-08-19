@@ -20,6 +20,9 @@ spec:
         resources:
           requests:
             storage: 10Gi
+    # ★ 여기 추가
+    extraFlags:
+      - "--default-authentication-plugin=caching_sha2_password"
 
   backup:
     enabled: false
