@@ -52,26 +52,34 @@ data:
       - job_name: kubernetes-pxc
         kubernetes_sd_configs:
           - role: pod
+        pipeline_stages:
+          - cri: {}
         relabel_configs:
           # 네임스페이스 필터링
           - source_labels: [__meta_kubernetes_namespace]
             action: keep
             regex: (mysql-operator|web-service)
           
-          # 올바른 로그 파일 경로 설정
-          - source_labels: [__meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
+          # 올바른 로그 파일 경로 - 실제 디렉토리 구조에 맞춤
+          # 패턴: namespace_podname_poduid 형태
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
+            separator: "_"
+            target_label: __tmp_full_path
+            replacement: ${1}_${2}_${3}
+          - source_labels: [__tmp_full_path, __meta_kubernetes_pod_container_name]
+            separator: "/"
             target_label: __path__
-            replacement: /var/log/pods/*$1*/*$2*/*.log
+            replacement: /var/log/pods/${1}/${2}/*.log
           
           # 메타데이터 라벨 추가
           - source_labels: [__meta_kubernetes_namespace]
             target_label: namespace
           - source_labels: [__meta_kubernetes_pod_name]
-            target_label: pod
+            target_label: pod_name
           - source_labels: [__meta_kubernetes_pod_container_name]
-            target_label: container
+            target_label: container_name
           - source_labels: [__meta_kubernetes_pod_node_name]
-            target_label: node
+            target_label: node_name
 ---
 apiVersion: apps/v1
 kind: DaemonSet
