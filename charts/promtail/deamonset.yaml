@@ -53,13 +53,25 @@ data:
         kubernetes_sd_configs:
           - role: pod
         relabel_configs:
+          # 네임스페이스 필터링
           - source_labels: [__meta_kubernetes_namespace]
             action: keep
             regex: (mysql-operator|web-service)
-          - source_labels: [__meta_kubernetes_pod_uid, __meta_kubernetes_container_name]
-            separator: /
+          
+          # 올바른 로그 파일 경로 설정
+          - source_labels: [__meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
             target_label: __path__
-            replacement: /var/log/pods/$1/$2.log
+            replacement: /var/log/pods/*$1*/*$2*/*.log
+          
+          # 메타데이터 라벨 추가
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            target_label: container
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            target_label: node
 ---
 apiVersion: apps/v1
 kind: DaemonSet
