@@ -20,7 +20,37 @@ spec:
         resources:
           requests:
             storage: 10Gi
-    configurationConfigMap: my-cluster-pxc-config
+    configuration: |
+      [mysqld]
+      # 콘솔 로깅 설정 (stdout으로 출력)
+      log_error_verbosity = 3
+      log_timestamps = SYSTEM
+      
+      # 제네럴 로그를 stdout으로 출력
+      general_log = ON
+      log_output = FILE
+      general_log_file = /proc/1/fd/1
+      
+      # 슬로우 쿼리 로그도 stdout으로 출력
+      slow_query_log = ON
+      long_query_time = 2
+      slow_query_log_file = /proc/1/fd/1
+      
+      # 에러 로그를 stderr로 출력
+      log_error = /proc/1/fd/2
+      
+      # 인증 설정
+      default_authentication_plugin = caching_sha2_password
+      
+      # 바이너리 로그 설정
+      log_bin = mysql-bin
+      binlog_format = ROW
+      expire_logs_days = 7
+      
+      # 문자셋 설정
+      character_set_server = utf8mb4
+      collation_server = utf8mb4_unicode_ci
+      
     resources:
       limits:
         cpu: 1000m
@@ -50,17 +80,3 @@ spec:
             storage: 2Gi
     expose:
       enabled: false
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: my-cluster-pxc-config
-  namespace: mysql-operator
-data:
-  my.cnf: |
-    [mysqld]    
-    default_authentication_plugin=caching_sha2_password
-    general_log=1
-    log_output=FILE
-    general_log_file=/var/lib/mysql/general.log
