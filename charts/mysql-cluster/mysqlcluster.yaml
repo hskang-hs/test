@@ -20,12 +20,7 @@ spec:
         resources:
           requests:
             storage: 10Gi
-    extraFlags:
-      - "--default-authentication-plugin=caching_sha2_password"
-      - "--log_error_services=log_sink_json"
-      - "--general-log=1"
-      - "--log-output=FILE,TABLE"  # 또는 TABLE만
-      - "--general-log-file=/proc/1/fd/1"  # stdout으로 출력력
+    configurationConfigMap: my-cluster-pxc-config
     resources:
       limits:
         cpu: 1000m
@@ -39,9 +34,9 @@ spec:
     image: percona/percona-xtradb-cluster-operator:1.11.0
 
   logCollector:
-    enabled: true
-    # ✨ 이 라인을 추가하여 logCollector 이미지를 명시적으로 설정하세요.
+    enabled: false
     image: percona/percona-xtradb-cluster-operator:1.11.0-logcollector
+    
 
   proxysql:
     enabled: true
@@ -55,3 +50,17 @@ spec:
             storage: 2Gi
     expose:
       enabled: false
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-cluster-pxc-config
+  namespace: mysql-operator
+data:
+  my.cnf: |
+    [mysqld]    
+    default_authentication_plugin=caching_sha2_password
+    general_log=1
+    log_output=FILE
+    general_log_file=/var/lib/mysql/general.log
