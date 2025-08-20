@@ -24,7 +24,8 @@ spec:
       - "--default-authentication-plugin=caching_sha2_password"
       - "--log_error_services=log_sink_json"
       - "--general-log=1"
-      - "--general-log-file=/dev/stdout"  # stdout으로 출력
+      - "--log-output=FILE,TABLE"  # 또는 TABLE만
+      - "--general-log-file=/proc/1/fd/1"  # stdout으로 출력력
     resources:
       limits:
         cpu: 1000m
