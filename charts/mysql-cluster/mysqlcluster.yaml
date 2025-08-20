@@ -37,7 +37,7 @@ spec:
       slow_query_log_file = /proc/1/fd/1
       
       # 인증 설정
-      default_authentication_plugin = caching_sha2_password
+      # default_authentication_plugin = caching_sha2_password
       
       # 문자셋 설정
       character_set_server = utf8mb4
