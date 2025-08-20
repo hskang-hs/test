@@ -63,7 +63,7 @@ spec:
   proxysql:
     enabled: true
     size: 2
-    image: percona/percona-xtradb-cluster-operator:1.11.0-proxysql
+    image: percona/percona-xtradb-cluster-operator:1.18.0-proxysql
     volumeSpec:
       persistentVolumeClaim:
         accessModes: [ "ReadWriteOnce" ]
