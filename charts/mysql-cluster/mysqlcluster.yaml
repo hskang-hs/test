@@ -36,16 +36,8 @@ spec:
       long_query_time = 2
       slow_query_log_file = /proc/1/fd/1
       
-      # 에러 로그를 stderr로 출력
-      log_error = /proc/1/fd/2
-      
       # 인증 설정
       default_authentication_plugin = caching_sha2_password
-      
-      # 바이너리 로그 설정
-      log_bin = mysql-bin
-      binlog_format = ROW
-      expire_logs_days = 7
       
       # 문자셋 설정
       character_set_server = utf8mb4
