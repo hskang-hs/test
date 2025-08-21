@@ -27,7 +27,7 @@ spec:
       log_timestamps = SYSTEM
       
       # 제네럴 로그를 stdout으로 출력
-      general_log = ON
+      general_log = 1
       log_output = FILE
       general_log_file = /proc/1/fd/1
       

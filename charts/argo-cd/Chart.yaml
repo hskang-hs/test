@@ -1,6 +1,10 @@
 apiVersion: v2
-name: argo-cd
-description: Argo CD 배포를 위한 Helm 차트
+name: argocd
+description: A Helm chart for installing Argo CD
 type: application
-version: 0.1.0
-appVersion: "1.0"
+version: 0.1.0          # 이 Helm Chart 자체의 버전
+appVersion: "2.11.3"    # 설치하려는 실제 Argo CD 버전
+dependencies:
+  - name: argo-cd
+    version: 7.7.10     # argo/argo-cd 차트 버전
+    repository: https://argoproj.github.io/argo-helm
