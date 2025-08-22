@@ -6,10 +6,10 @@ metadata:
 spec:
   chart:
     spec:
-      chart: ./charts/nginx
+      chart: ./charts/my-app
       sourceRef:
         kind: GitRepository
         name: hs-test
-        namespace: nginx
+        namespace: ci-cd-test-5vgdm
       interval: 1m
   interval: 5m
