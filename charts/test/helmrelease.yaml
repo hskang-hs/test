@@ -9,7 +9,7 @@ spec:
       chart: ./charts/nginx
       sourceRef:
         kind: GitRepository
-        name: hs-test
+        name: nginx-text
         namespace: ci-cd-test-5vgdm
       interval: 1m
   interval: 5m
