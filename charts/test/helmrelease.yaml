@@ -10,4 +10,7 @@ spec:
         kind: GitRepository
         name: nginx-text
       interval: 1m
-  interval: 5m
+  interval: 2m
+  values:
+    service:
+      type: LoadBalancer   # 반드시 HelmRelease에서 override
