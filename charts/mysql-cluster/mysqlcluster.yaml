@@ -71,4 +71,5 @@ spec:
           requests:
             storage: 2Gi
     expose:
-      enabled: false
+      enabled: true
+      type: NodePort
