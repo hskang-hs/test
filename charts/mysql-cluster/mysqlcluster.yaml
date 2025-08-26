@@ -72,4 +72,4 @@ spec:
             storage: 2Gi
     expose:
       enabled: true
-      type: NodePort
+      type: LoadBalancer
