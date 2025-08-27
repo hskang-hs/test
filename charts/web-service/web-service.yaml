@@ -56,8 +56,6 @@ spec:
       port: 443
       targetPort: 443
   type: LoadBalancer
-  externalIPs:
-    - 119.42.188.176
 ---
 apiVersion: v1
 kind: ConfigMap
