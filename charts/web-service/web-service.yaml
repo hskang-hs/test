@@ -55,7 +55,7 @@ spec:
     - name: https
       port: 443
       targetPort: 443
-  type: LoadBalancer
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: ConfigMap
