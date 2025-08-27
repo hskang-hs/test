@@ -1,0 +1,44 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: web-service-gateway
+  namespace: web-service
+spec:
+  selector:
+    istio: ingressgateway   # istio-system의 ingressgateway 선택
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "nk8s.neteer.co.kr"   # 외부에서 접근할 도메인
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "nk8s.neteer.co.kr"
+      tls:
+        mode: SIMPLE
+        credentialName: web-service-tls  # TLS Secret 이름
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: web-service-vs
+  namespace: web-service
+spec:
+  hosts:
+    - "nk8s.neteer.co.kr"
+  gateways:
+    - web-service-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/"    # 모든 요청을 web-service로 라우팅
+      route:
+        - destination:
+            host: web-service-nkp.web-service.svc.cluster.local
+            port:
+              number: 80
