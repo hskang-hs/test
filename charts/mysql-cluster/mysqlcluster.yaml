@@ -73,3 +73,4 @@ spec:
     expose:
       enabled: true
       type: LoadBalancer
+      loadBalancerIP: 119.42.188.179
