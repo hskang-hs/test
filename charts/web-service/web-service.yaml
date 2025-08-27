@@ -35,7 +35,7 @@ spec:
               memory: 256Mi
           env:
             - name: REAL_HOSTNAME
-              value: "nkp.neteer.co.kr"
+              value: "nk8s.neteer.co.kr"
       imagePullSecrets:
         - name: ghcr-secret
           
@@ -63,4 +63,16 @@ metadata:
   name: web-service-config
   namespace: web-service
 data:
-  REAL_HOSTNAME: "nkp.neteer.co.kr"  # 실제 호스트명으로 변경
+  REAL_HOSTNAME: "nk8s.neteer.co.kr"  # 실제 호스트명으로 변경
+---
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+metadata:
+  name: ghcr-secret
+  namespace: web-service
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJnaGNyLmlvIjp7InVzZXJuYW1lIjoiTmV0ZWVyLUNTLUJJWiIsInBhc3N3b3JkIjoiZ2hwX1BhTEJ2Mkh0bTFZVzM0elIwRlRmalV4NlhPdG1nUzNueFlkbSIsImVtYWlsIjoiY3MuYml6QG5ldGVlci5jby5rciIsImF1dGgiOiJUbVYwWldWeUxVTlRMVUpKV2pwbmFIQmZVR0ZNUW5ZeVNIUnRNVmxYTXpSNlVqQkdWR1pxVlhnMldFOTBiV2RUTTI1NFdXUnQifX19
+
+
+
