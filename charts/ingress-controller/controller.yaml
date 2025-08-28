@@ -8,7 +8,9 @@ metadata:
     app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/name: ingress-nginx
   annotations:
-    metallb.universe.tf/address-pool: nginx-ip-pool
+    meta.helm.sh/release-name: ingress-nginx
+    meta.helm.sh/release-namespace: ingress-nginx
+    metallb.universe.tf/address-pool: metallb  # nginx-ip-pool → metallb로 변경
 spec:
   type: LoadBalancer
   ports:
