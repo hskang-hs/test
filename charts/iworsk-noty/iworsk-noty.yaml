@@ -45,12 +45,3 @@ spec:
       port: 80
       targetPort: 80
   type: ClusterIP
-# ---
-# apiVersion: v1
-# kind: Secret
-# type: kubernetes.io/dockerconfigjson
-# metadata:
-#   name: ghcr-secret
-#   namespace: web-service
-# data:
-#   .dockerconfigjson: eyJhdXRocyI6eyJnaGNyLmlvIjp7InVzZXJuYW1lIjoiTmV0ZWVyLUNTLUJJWiIsInBhc3N3b3JkIjoiZ2hwX1BhTEJ2Mkh0bTFZVzM0elIwRlRmalV4NlhPdG1nUzNueFlkbSIsImVtYWlsIjoiY3MuYml6QG5ldGVlci5jby5rciIsImF1dGgiOiJUbVYwWldWeUxVTlRMVUpKV2pwbmFIQmZVR0ZNUW5ZeVNIUnRNVmxYTXpSNlVqQkdWR1pxVlhnMldFOTBiV2RUTTI1NFdXUnQifX19
