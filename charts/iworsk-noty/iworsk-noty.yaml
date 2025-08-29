@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iworks-noty-nkp
+  namespace: web-service
+  labels:
+    app: iworks-noty-nkp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: iworks-noty-nkp
+  template:
+    metadata:
+      labels:
+        app: iworks-noty-nkp
+    spec:
+      containers:
+        - name: iworks-noty-nkp
+          image: ghcr.io/neteer-cs-biz/iworks-noty-nkp:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+      imagePullSecrets:
+        - name: ghcr-secret
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iworks-noty-nkp
+  namespace: web-service
+spec:
+  selector:
+    app: iworks-noty-nkp
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+# ---
+# apiVersion: v1
+# kind: Secret
+# type: kubernetes.io/dockerconfigjson
+# metadata:
+#   name: ghcr-secret
+#   namespace: web-service
+# data:
+#   .dockerconfigjson: eyJhdXRocyI6eyJnaGNyLmlvIjp7InVzZXJuYW1lIjoiTmV0ZWVyLUNTLUJJWiIsInBhc3N3b3JkIjoiZ2hwX1BhTEJ2Mkh0bTFZVzM0elIwRlRmalV4NlhPdG1nUzNueFlkbSIsImVtYWlsIjoiY3MuYml6QG5ldGVlci5jby5rciIsImF1dGgiOiJUbVYwWldWeUxVTlRMVUpKV2pwbmFIQmZVR0ZNUW5ZeVNIUnRNVmxYTXpSNlVqQkdWR1pxVlhnMldFOTBiV2RUTTI1NFdXUnQifX19

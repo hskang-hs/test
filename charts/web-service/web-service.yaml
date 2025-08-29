@@ -35,7 +35,7 @@ spec:
               memory: 256Mi
           env:
             - name: REAL_HOSTNAME
-              value: "nk8s.neteer.co.kr"
+              value: "nkp.neteer.co.kr"
       imagePullSecrets:
         - name: ghcr-secret
           
@@ -63,7 +63,7 @@ metadata:
   name: web-service-config
   namespace: web-service
 data:
-  REAL_HOSTNAME: "nk8s.neteer.co.kr"  # 실제 호스트명으로 변경
+  REAL_HOSTNAME: "nkp.neteer.co.kr"  # 실제 호스트명으로 변경
 ---
 apiVersion: v1
 kind: Secret

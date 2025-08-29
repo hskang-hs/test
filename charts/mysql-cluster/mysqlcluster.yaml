@@ -5,7 +5,7 @@ metadata:
   namespace: mysql-operator
 spec:
   crVersion: 1.11.0
-  secretsName: my-cluster-secret
+  secretsName: new-cluster-secret
   sslSecretName: my-cluster-ssl
   sslInternalSecretName: my-cluster-ssl-internal
 
@@ -74,3 +74,4 @@ spec:
       enabled: true
       type: LoadBalancer
       loadBalancerIP: 119.42.188.179
+

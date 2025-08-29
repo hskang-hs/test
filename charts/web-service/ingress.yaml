@@ -1,44 +1,42 @@
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
 metadata:
-  name: web-service-gateway
-  namespace: web-service
+  name: letsencrypt-prod
 spec:
-  selector:
-    istio: ingressgateway   # istio-system의 ingressgateway 선택
-  servers:
-    - port:
-        number: 80
-        name: http
-        protocol: HTTP
-      hosts:
-        - "nk8s.neteer.co.kr"   # 외부에서 접근할 도메인
-    - port:
-        number: 443
-        name: https
-        protocol: HTTPS
-      hosts:
-        - "nk8s.neteer.co.kr"
-      tls:
-        mode: SIMPLE
-        credentialName: web-service-tls  # TLS Secret 이름
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: hskang@neteer.co.kr
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
 ---
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: web-service-vs
+  name: web-service-ingress
   namespace: web-service
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"   # cert-manager 사용
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
-  hosts:
-    - "nk8s.neteer.co.kr"
-  gateways:
-    - web-service-gateway
-  http:
-    - match:
-        - uri:
-            prefix: "/"    # 모든 요청을 web-service로 라우팅
-      route:
-        - destination:
-            host: web-service-nkp.web-service.svc.cluster.local
+  ingressClassName: nginx
+  rules:
+  - host: nkp.neteer.co.kr     # 도메인
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-service-nkp   # ArgoCD의 서비스 이름
             port:
-              number: 80
+              number: 443         # 서비스의 HTTPS 포트
+  tls:
+  - hosts:
+    - nkp.neteer.co.kr
+    secretName: web-service-tls # cert-manager가 생성할 Secret
